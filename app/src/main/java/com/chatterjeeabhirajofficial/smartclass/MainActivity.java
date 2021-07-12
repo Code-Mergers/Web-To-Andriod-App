@@ -27,8 +27,6 @@ public class MainActivity extends AppCompatActivity {
         web.setWebViewClient(new CallbackClass());
         web.setWebChromeClient(new WebChromeClient());
         web.loadUrl("https://smartclass-production.netlify.app/");
-
-
     }
 
     private class CallbackClass extends WebViewClient {
