@@ -1,14 +1,11 @@
 package com.chatterjeeabhirajofficial.smartclass;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,11 +17,9 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private WebView web;
-    private Toast mToastToShow;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
         // Set the toast and duration
 
@@ -36,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         }
         else {
-            Toast.makeText(MainActivity.this, "App is loading....", Toast.LENGTH_LONG).show();
+            showToast("App is loading...");
             setContentView(R.layout.activity_main);
             web = findViewById(R.id.webView);
             WebSettings webSettings = web.getSettings();
@@ -52,27 +47,37 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
             webSettings.setJavaScriptEnabled(true);
-            web.setWebViewClient(new CallbackClass());
+            web.setWebViewClient(new WebViewClient(){
+                @Override
+                public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
+                    return false;
+                }
+            });
             web.setWebChromeClient(new WebChromeClient());
 //        webSettings.setDomStorageEnabled(true);
             web.loadUrl("https://smartclass-mobile.netlify.app/");
         }
-
     }
 
 
-    private class CallbackClass extends WebViewClient {
-        @Override
-        public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
-            return false;
-        }
-
-    }
+//    private class CallbackClass extends WebViewClient {
+//        @Override
+//        public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
+//            return false;
+//        }
+//
+//    }
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService( CONNECTIVITY_SERVICE );
         //noinspection deprecation
          NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public void showToast(String toastMessage) {
+        Toast toast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.show();
     }
 }
