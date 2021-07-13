@@ -1,39 +1,53 @@
 package com.chatterjeeabhirajofficial.smartclass;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private WebView web;
+    private ProgressBar progressBar;
+    RelativeLayout relativeLayout;
+    private String webUrl = "https://smartclass-mobile.netlify.app/";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         // Set the toast and duration
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
-        if ( !isNetworkAvailable() ) { // loading offline
-            Intent i = new Intent(this,OfflineActivity.class);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getSupportActionBar().hide();
+        if (!isNetworkAvailable()) { // loading offline
+            Intent i = new Intent(this, OfflineActivity.class);
             startActivity(i);
-        }
-        else {
-            showToast("App is loading...");
+        } else {
+            showToast("Loading...");
             setContentView(R.layout.activity_main);
             web = findViewById(R.id.webView);
+            progressBar = (ProgressBar) findViewById(R.id.progress1);
+            relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
             WebSettings webSettings = web.getSettings();
 //        webSettings.setAppCacheMaxSize( 5 * 1024 * 1024 ); // 5MB
 //        webSettings.setAppCachePath( getApplicationContext().getCacheDir().getAbsolutePath() );
@@ -47,31 +61,37 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
             webSettings.setJavaScriptEnabled(true);
-            web.setWebViewClient(new WebViewClient(){
+            web.setWebViewClient(new WebViewClient() {
                 @Override
                 public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
                     return false;
                 }
+
             });
-            web.setWebChromeClient(new WebChromeClient());
+            web.setWebChromeClient(new WebChromeClient() {
+                public void onProgressChanged(WebView view, int newProgress) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    progressBar.setProgress(newProgress);
+                }
+            });
 //        webSettings.setDomStorageEnabled(true);
-            web.loadUrl("https://smartclass-mobile.netlify.app/");
+            web.loadUrl(webUrl);
+
         }
     }
 
 
-//    private class CallbackClass extends WebViewClient {
+    //    private class CallbackClass extends WebViewClient {
 //        @Override
 //        public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
 //            return false;
 //        }
 //
 //    }
-
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService( CONNECTIVITY_SERVICE );
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         //noinspection deprecation
-         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
@@ -80,4 +100,51 @@ public class MainActivity extends AppCompatActivity {
         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
         toast.show();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    public void checkConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mobileNetwork = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+        if (wifi.isConnected()) {
+            web.loadUrl(webUrl);
+            web.setVisibility(View.VISIBLE);
+        } else if (mobileNetwork.isConnected()) {
+            web.loadUrl(webUrl);
+            web.setVisibility(View.VISIBLE);
+        } else {
+            web.setVisibility(View.GONE);
+        }
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.nav_previous:
+                if (web.canGoBack()) {
+                    web.goBack();
+                }
+                break;
+
+            case R.id.nav_next:
+                if (web.canGoForward()) {
+                    web.goForward();
+                }
+                break;
+
+            case R.id.nav_refresh:
+                checkConnection();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
+
+
