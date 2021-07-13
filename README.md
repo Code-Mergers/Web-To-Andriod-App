@@ -7,3 +7,4 @@
 
 ## PROBLEMS REMAINING ->
 ### 1) WHEN OFFLINE SUDDENLY, RELOAD BUTTON(IN THE ACTION BAR OF MAIN ACTIVITY) NOT ROUTED TO OFFLINE ACTIVITY SO APP WILL HANG IF THIS BUTTON IS CLICKED HERE IN OFFLINE STATE
+### 2) Family label in offline_activity action bar(removed now) was probably due to family label in the android manifest.
