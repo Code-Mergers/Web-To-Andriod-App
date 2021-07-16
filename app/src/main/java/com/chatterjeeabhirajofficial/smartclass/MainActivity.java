@@ -25,9 +25,8 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private WebView web;
-    private ProgressBar progressBar;
     RelativeLayout relativeLayout;
-    private String webUrl = "https://smartclass-mobile.netlify.app/";
+    private String webUrl = "https://smartclassmobile83325435435.netlify.app/";
 
 
     @Override
@@ -39,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
 //        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //        getSupportActionBar().hide();
+
         if (!isNetworkAvailable()) { // loading offline
             Intent i = new Intent(this, OfflineActivity.class);
             startActivity(i);
@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
             showToast("Loading...");
             setContentView(R.layout.activity_main);
             web = findViewById(R.id.webView);
-            progressBar = (ProgressBar) findViewById(R.id.progress1);
             relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
             WebSettings webSettings = web.getSettings();
 //        webSettings.setAppCacheMaxSize( 5 * 1024 * 1024 ); // 5MB
@@ -68,12 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             });
-            web.setWebChromeClient(new WebChromeClient() {
-                public void onProgressChanged(WebView view, int newProgress) {
-                    progressBar.setVisibility(View.VISIBLE);
-                    progressBar.setProgress(newProgress);
-                }
-            });
+            web.setWebChromeClient(new WebChromeClient());
 //        webSettings.setDomStorageEnabled(true);
             web.loadUrl(webUrl);
 
